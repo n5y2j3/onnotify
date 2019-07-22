@@ -9,30 +9,16 @@
             "fields": []
         },
         {
-            "name": "instruct",
+            "name": "trxlist",
             "base": "",
             "fields": [
                 {
-                    "name": "inbalance",
-                    "type": "asset"
+                    "name": "user",
+                    "type": "name"
                 },
                 {
-                    "name": "iner",
-                    "type": "name"
-                }
-            ]
-        },
-        {
-            "name": "outstruct",
-            "base": "",
-            "fields": [
-                {
-                    "name": "outbalance",
+                    "name": "balance",
                     "type": "asset"
-                },
-                {
-                    "name": "outer",
-                    "type": "name"
                 }
             ]
         }
@@ -46,15 +32,15 @@
     ],
     "tables": [
         {
-            "name": "inss",
-            "type": "instruct",
+            "name": "eosreceiver",
+            "type": "trxlist",
             "index_type": "i64",
             "key_names": [],
             "key_types": []
         },
         {
-            "name": "outss",
-            "type": "outstruct",
+            "name": "eossender",
+            "type": "trxlist",
             "index_type": "i64",
             "key_names": [],
             "key_types": []
