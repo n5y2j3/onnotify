@@ -1,3 +1,131 @@
+/* 각 계정마다 누적 금액을 저장할 수 있도록
+/#include <eosio/eosio.hpp>
+#include <eosio/asset.hpp>
+
+using namespace eosio;
+
+CONTRACT onnotify: public contract {
+    public:
+    using contract::contract;
+
+    ACTION dummy() {}
+
+    [[eosio::on_notify("eosio.token::transfer")]]
+        void ontransfer(name from, name to, asset quantity, std::string memo) {
+
+        if(from == get_self()) {
+            outs outerTable(get_self(), get_self().value);
+
+            auto itr = outerTable.find(to.value);
+            if(itr == outerTable.end()) {
+                outerTable.emplace(to, [&](auto& row) {
+                    row.outer = to;
+                    row.outbalance = quantity;
+                });
+            } else {
+                outerTable.modify(itr, from, [&](auto& row) {
+                    row.outbalance += quantity;
+                });
+            }
+        } else if(to == get_self()) {
+            inputs inerTable(get_self(), get_self().value);
+
+            auto itr = inerTable.find(to.value);
+            if(itr== inerTable.end()) {
+                inerTable.emplace(from, [&](auto& row) {
+                    row.iner = to;
+                    row.inbalance = quantity;
+                });
+            } else {
+                auto itr = inerTable.begin();
+                inerTable.modify(itr, from, [&](auto& row) {
+                    row.iner = to;
+                    row.inbalance += quantity;
+                });
+            }
+        }
+    }
+    */
+
+/* 
+
+    private:
+        TABLE outstruct {
+            asset outbalance;
+            name outer;
+
+            uint64_t primary_key() const { return outer.value; }
+        };
+
+        TABLE instruct {
+            asset inbalance;
+            name iner;
+
+            uint64_t primary_key() const { return iner.value; }
+        };
+    typedef multi_index<"outss"_n, outstruct> outs;
+    typedef multi_index<"inss"_n, instruct> inputs;
+};
+
+/* 입금 내역 조회(in)
+#include <eosio/eosio.hpp>
+#include <eosio/asset.hpp>
+
+using namespace eosio;
+
+CONTRACT onnotify: public contract {
+public:
+using contract::contract;
+
+ACTION dummy() {}
+
+
+[[eosio::on_notify("eosio.token::transfer")]]
+
+void ontransfer(name from, name to, asset quantity, std::string memo) {
+if(from == get_self()) {
+outs myTable(get_self(), get_self().value);
+if(myTable.begin() == myTable.end()) {
+myTable.emplace(from, [&](auto& row) {
+row.balance = quantity;
+});
+} else {
+auto itr = myTable.begin();
+myTable.modify(itr, from, [&](auto& row) {
+row.balance += quantity;
+});
+}
+} 
+
+if(to == get_self()) {
+ins myTable(get_self(), get_self().value);
+if(myTable.begin() == myTable.end()) {
+myTable.emplace(to, [&](auto& row) {
+row.balance = quantity;
+});
+} else {
+auto itr = myTable.begin();
+myTable.modify(itr, to, [&](auto& row) {
+row.balance += quantity;
+});
+}
+}
+}
+
+private:
+TABLE outstruct {
+asset balance;
+
+uint64_t primary_key() const { return balance.symbol.code().raw(); }
+};
+
+typedef multi_index<"out"_n, outstruct> outs;
+typedef multi_index<"in"_n, outstruct> ins;
+};
+
+*/
+
+/* 출금 내역 조회(out)
 #include <eosio/eosio.hpp>
 #include <eosio/asset.hpp>
 
@@ -11,16 +139,16 @@ CONTRACT onnotify: public contract {
     
     [[eosio::on_notify("eosio.token::transfer")]]
     void ontransfer(name from, name to, asset quantity, std::string memo) {
-            check(from == get_self(),"no out");//from 과 내 자신 비교
+            check(from == get_self(),"no out");
 
             outs myTable(get_self(), get_self().value);
-            if(myTable.begin() == myTable.end()) {//테이블이 존재하지 않는경우
-                myTable.emplace(from, [&](auto& row) {//quantity를 balance에 추가
+            if(myTable.begin() == myTable.end()) {
+                myTable.emplace(from, [&](auto& row) {
                     row.balance = quantity;
                 });
-            } else {//테이블이 있는 경우
-                auto itr = myTable.begin();//수정하기 전에 테이블을 찾는다(이 경우, 원소가 하나일 것이므로 begin 함수를 사용해 주어야 한다.)
-                //그리고 나서 테이블 수정
+            } else {
+                auto itr = myTable.begin();
+                
                 myTable.modify(itr, from, [&](auto& row) {
                     row.balance += quantity;
                 });
@@ -28,7 +156,7 @@ CONTRACT onnotify: public contract {
 
     }
     private:
-    TABLE outstruct { //내가 사용할 테이블
+    TABLE outstruct { 
         asset balance;
 
         uint64_t primary_key() const { return balance.symbol.code().raw(); }
@@ -36,3 +164,4 @@ CONTRACT onnotify: public contract {
 
     typedef multi_index<"out"_n, outstruct> outs;
 };
+*/

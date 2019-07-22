@@ -9,12 +9,30 @@
             "fields": []
         },
         {
+            "name": "instruct",
+            "base": "",
+            "fields": [
+                {
+                    "name": "inbalance",
+                    "type": "asset"
+                },
+                {
+                    "name": "iner",
+                    "type": "name"
+                }
+            ]
+        },
+        {
             "name": "outstruct",
             "base": "",
             "fields": [
                 {
-                    "name": "balance",
+                    "name": "outbalance",
                     "type": "asset"
+                },
+                {
+                    "name": "outer",
+                    "type": "name"
                 }
             ]
         }
@@ -28,7 +46,14 @@
     ],
     "tables": [
         {
-            "name": "out",
+            "name": "inss",
+            "type": "instruct",
+            "index_type": "i64",
+            "key_names": [],
+            "key_types": []
+        },
+        {
+            "name": "outss",
             "type": "outstruct",
             "index_type": "i64",
             "key_names": [],
